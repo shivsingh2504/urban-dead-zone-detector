@@ -10,3 +10,6 @@ print(pois.head())
 
 pois = pois.to_crs(city.crs)
 print("CRS aligned")
+joined = gpd.sjoin(pois,city,predicate="within")
+print("Spatial join complete!!")
+print(joined.head())
