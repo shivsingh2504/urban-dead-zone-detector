@@ -1,0 +1,8 @@
+city_with_counts.plot(
+  column="POI Density",
+  cmap="Reds",
+  legend=True,
+  edgecolor="black",
+  linewidth=0.3,
+  figsize=(12,10)
+)
