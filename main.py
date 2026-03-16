@@ -13,3 +13,6 @@ print("CRS aligned")
 joined = gpd.sjoin(pois,city,predicate="within")
 print("Spatial join complete!!")
 print(joined.head())
+
+poi_counts = joined.groupby("Name").size().reset_index(name="poi_count")
+print(poi_counts.head())
