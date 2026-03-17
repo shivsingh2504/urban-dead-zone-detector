@@ -25,17 +25,28 @@ print(city_with_counts[["Name","POI Count"]].head())
 city_with_counts = city_with_counts.to_crs(epsg=3857)
 city_with_counts["Area"] = city_with_counts.geometry.area
 city_with_counts["POI Density"]=(city_with_counts["POI Count"]/city_with_counts["Area"])
-threshold = city_with_counts["POI Density"].quantile(0.15)
-city_with_counts["Dead Zone"] = city_with_counts["POI Count"]< threshold
+threshold = city_with_counts["POI Density"].quantile(0.25)
+city_with_counts["Dead Zone"] = city_with_counts["POI Density"]<threshold
 print(city_with_counts[["Name","POI Count","Dead Zone"]].head())
 print(city_with_counts[["Name","POI Count","POI Density"]].head())
 print(city_with_counts[["Name","POI Count","Area","POI Density"]].head(10))
+
 city_with_counts.plot(
-    column="Dead Zone",
+    column="POI Density",
+    cmap="Reds",
     legend=True,
-    cmap="coolwarm",
     figsize=(10,10)
 )
 
-plt.title("Urban Dead Zones based on POI Density")
+plt.title("POI Density Map")
+plt.show()
+
+city_with_counts.plot(
+    column="Dead Zone",
+    cmap="coolwarm",
+    legend=True,
+    figsize=(10,10)
+)
+
+plt.title("Dead Zones (Low POI Density)")
 plt.show()

@@ -6,3 +6,14 @@ city_with_counts.plot(
   linewidth=0.3,
   figsize=(12,10)
 )
+
+
+city_with_counts.plot(
+    column="Dead Zone",
+    legend=True,
+    cmap="coolwarm",
+    figsize=(10,10)
+)
+
+plt.title("Urban Dead Zones based on POI Density")
+plt.show()
