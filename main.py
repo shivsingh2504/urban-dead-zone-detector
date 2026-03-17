@@ -1,52 +1,40 @@
 from src.data.data_load import load_city
 from src.data.poi_fetch import fetch_pois
-import geopandas as gpd
-import matplotlib.pyplot as plt
-city = load_city("data/raw/ZillowNeighborhoods-NY.shp")
-city = city[city["City"] == "New York"]
-print(city.head())
-print(city.columns)
-pois = fetch_pois("New York, USA")
-print("POIs fetched!")
-print(pois.head())
+from src.features.dead_zone import detect_dead_zones
+from src.utils.geo_utils import perform_spatial_join
+from src.features.density import calculate_density
+from src.visual.map_visual import plot_density, plot_dead_zones
 
-pois = pois.to_crs(city.crs)
-print("CRS aligned")
-joined = gpd.sjoin(pois,city,predicate="within")
-print("Spatial join complete!!")
-print(joined.head())
+def main():
+    # Load data
+    city = load_city("data/raw/ZillowNeighborhoods-NY.shp")
+    city = city[city["City"] == "New York"]
 
-poi_counts = joined.groupby("Name").size().reset_index(name="POI Count")
-print(poi_counts.head())
+    pois = fetch_pois("New York, USA")
 
-city_with_counts = city.merge(poi_counts, on="Name", how="left")
-city_with_counts["POI Count"] = city_with_counts["POI Count"].fillna(0)
-print(city_with_counts[["Name","POI Count"]].head())
-city_with_counts = city_with_counts.to_crs(epsg=3857)
-city_with_counts["Area"] = city_with_counts.geometry.area
-city_with_counts["POI Density"]=(city_with_counts["POI Count"]/city_with_counts["Area"])
-threshold = city_with_counts["POI Density"].quantile(0.25)
-city_with_counts["Dead Zone"] = city_with_counts["POI Density"]<threshold
-print(city_with_counts[["Name","POI Count","Dead Zone"]].head())
-print(city_with_counts[["Name","POI Count","POI Density"]].head())
-print(city_with_counts[["Name","POI Count","Area","POI Density"]].head(10))
+    print("Data Loaded")
 
-city_with_counts.plot(
-    column="POI Density",
-    cmap="Reds",
-    legend=True,
-    figsize=(10,10)
-)
+    # Spatial Join
+    joined = perform_spatial_join(pois, city)
+    print("Spatial Join Done")
 
-plt.title("POI Density Map")
-plt.show()
+    # Density Calculation
+    city = calculate_density(city, joined)
+    print("Density Calculated")
 
-city_with_counts.plot(
-    column="Dead Zone",
-    cmap="coolwarm",
-    legend=True,
-    figsize=(10,10)
-)
+    # Dead Zone Detection
+    city = detect_dead_zones(city)
+    print("Dead Zones Identified")
 
-plt.title("Dead Zones (Low POI Density)")
-plt.show()
+    print(city[["Name", "POI Count", "POI Density", "Dead Zone"]].head())
+    
+    dead_zones = city[city["Dead Zone"]==True]
+    dead_zones_sorted = dead_zones.sort_values(by="POI Density")
+    print(dead_zones_sorted[["Name","POI Density"]].head(10))
+    # Visualization
+    plot_density(city)
+    plot_dead_zones(city)
+
+
+if __name__ == "__main__":
+    main()
