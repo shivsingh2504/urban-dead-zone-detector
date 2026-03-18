@@ -3,9 +3,8 @@ from src.data.poi_fetch import fetch_pois
 from src.utils.geo_utils import perform_spatial_join
 from src.features.density import calculate_density
 from src.analysis.detect_zones import classify_zones
-from src.visual.map_visual import plot_density, plot_dead_zones
-
-
+from src.visual.map_visual import plot_density, plot_dead_zones,plot_zone_types
+import matplotlib.pyplot as plt
 def main():
     # Load data
     city = load_city("data/raw/ZillowNeighborhoods-NY.shp")
@@ -40,6 +39,9 @@ def main():
     # Visualization
     plot_density(city)
     plot_dead_zones(city)
+    plot_zone_types(city)
+    plt.show()
+
 
 
 if __name__ == "__main__":
