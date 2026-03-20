@@ -41,4 +41,15 @@ def plot_zone_types(city):
         ax=ax
     )
     ax.set_title("Zone Types")
-    
+
+def plot_cluster_zones(city):
+    fig, ax = plt.subplots()
+    city.plot(
+        column="Cluster Zone",
+        cmap="viridis",
+        legend=True,
+        edgecolor="black",
+        ax=ax
+    )
+    ax.set_title("Cluster-Based Zones")
+       
