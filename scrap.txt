@@ -34,3 +34,7 @@ def classify_zones(city_with_counts):
       return "Active Zone"
   city_with_counts["Zone Type"] = city_with_counts["Density Score"].apply(classify_zone)
   return city_with_counts
+city = city[
+    (city["POI Count"] > 10) &   # remove empty areas
+    (city["Area"] < city["Area"].quantile(0.95))  # remove huge parks
+  ]

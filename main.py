@@ -6,6 +6,7 @@ from src.analysis.detect_zones import classify_zones
 from src.visual.map_visual import plot_density, plot_dead_zones,plot_zone_types
 from src.analysis.clustering import apply_dbscan, label_clusters
 import matplotlib.pyplot as plt
+from src.analysis.rec import recommend_zones, get_opp
 def main():
     # Load data
     city = load_city("data/raw/ZillowNeighborhoods-NY.shp")
@@ -36,6 +37,13 @@ def main():
 
     print("\nTop 10 Worst Dead Zones:")
     print(dead_zones_sorted[["Name", "POI Density"]].head(10))
+
+    city = recommend_zones(city)
+
+    top_areas = get_opp(city, 20)
+
+    print("\nTop 20 Business Opportunity Areas:")
+    print(top_areas)
 
     print(city["Zone Type"].value_counts())
     # Visualization
