@@ -21,7 +21,18 @@ def recommend_zones(city):
 
   city["Normalized Density"] = (city['POI per Area']-min_val)/(max_val-min_val + 1e-9)
 
-  city["Opportunity Score"] = (0.6*(1 - city["POI per Area"]) + 0.4* (city["Normalized Density"]))
+  min_d = city["Demand Score"].min()
+  max_d = city["Demand Score"].max()
+
+  city["Demand Score"] = (
+    (city["Demand Score"] - min_d) / (max_d - min_d + 1e-9)
+  )
+
+  ideal_density = 0.10
+  city["Density Score"] = np.exp(-((city["Normalized Density"]- ideal_density)**2)/0.02)
+
+
+  city["Opportunity Score"] = (0.4 * city["Density Score"]+ 0.6 * city["Demand Score"])
   return city
 
 def get_opp(city,n):
