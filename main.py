@@ -3,7 +3,7 @@ from src.data.poi_fetch import fetch_pois
 from src.utils.geo_utils import perform_spatial_join
 from src.features.density import calculate_density
 from src.analysis.detect_zones import classify_zones
-from src.visual.map_visual import plot_density, plot_dead_zones,plot_zone_types,plot_cluster_zones
+from src.visual.map_visual import plot_density, plot_dead_zones,plot_zone_types
 from src.analysis.clustering import apply_dbscan, label_clusters
 import matplotlib.pyplot as plt
 def main():
@@ -23,11 +23,6 @@ def main():
     city = calculate_density(city, joined)
     print("Density Calculated")
 
-    # Clustering (ML-based)
-    city = apply_dbscan(city)
-    city = label_clusters(city)
-    print("Clustering Done")
-
     # Zone Classification (NEW LOGIC)
     city = classify_zones(city)
     print("Zones Classified")
@@ -42,12 +37,12 @@ def main():
     print("\nTop 10 Worst Dead Zones:")
     print(dead_zones_sorted[["Name", "POI Density"]].head(10))
 
-    
+    print(city["Zone Type"].value_counts())
     # Visualization
     plot_density(city)
     plot_dead_zones(city)
     plot_zone_types(city)
-    plot_cluster_zones(city)
+    
     plt.show()
 
 
